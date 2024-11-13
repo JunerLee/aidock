@@ -1,0 +1,42 @@
+# JupyterLab 和中文支持
+jupyterlab
+jupyterlab-language-pack-zh-CN
+
+#opencv-python<=4.8.0.74   # OpenCV
+#supervision         # 目标检测可视化
+
+# D-FINE 项目依赖
+torchvision>=0.15.2
+faster-coco-eval>=1.6.5
+tensorboard
+scipy
+calflops
+transformers
+
+# 深度学习框架和工具
+ultralytics>=8.2.0,<8.3.0    # YOLOv8
+opencv-python-headless
+onnx                 # ONNX 格式支持
+#onnxruntime-gpu      # ONNX GPU 推理
+onnx-simplifier      # ONNX 模型简化
+#tensorrt             # TensorRT 支持
+
+
+# 数据处理
+numpy               # 数值计算（基础镜像已包含）
+Pillow              # 图像处理（基础镜像已包含）
+scikit-image        # 图像处理
+
+# 可视化工具
+matplotlib          # 绘图库
+ipywidgets          # Jupyter 交互组件
+
+# 开发和调试工具
+debugpy             # Python 调试器
+yapf                # 代码格式化
+autopep8            # 代码规范化
+
+# 工具库
+tqdm                # 进度条
+PyYAML              # YAML 处理
+requests            # HTTP 请求

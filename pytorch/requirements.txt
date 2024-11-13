@@ -1,0 +1,55 @@
+# JupyterLab 和中文支持
+jupyterlab
+jupyterlab-language-pack-zh-CN
+
+# 深度学习框架和工具
+ultralytics>=8.2.0,<8.3.0    # YOLOv8
+torch                 # PyTorch（基础镜像已包含）
+torchvision          # PyTorch 视觉库（基础镜像已包含）
+onnx                 # ONNX 格式支持
+onnxruntime-gpu      # ONNX GPU 推理
+onnx-simplifier      # ONNX 模型简化
+tensorrt             # TensorRT 支持
+timm                 # SOTA 模型库
+ptflops              # 模型计算量分析
+thop                 # 模型计算量分析
+
+# 视频处理
+#opencv-python        # OpenCV
+av                   # PyAV 视频处理
+moviepy             # 视频编辑
+supervision         # 目标检测可视化
+
+# 数据处理和增强
+albumentations       # 数据增强
+numpy               # 数值计算（基础镜像已包含）
+pandas              # 数据分析
+scikit-learn        # 机器学习工具
+scikit-image        # 图像处理
+Pillow              # 图像处理（基础镜像已包含）
+
+# 可视化工具
+matplotlib          # 绘图库
+seaborn            # 统计可视化
+plotly             # 交互式可视化
+wandb              # 实验跟踪
+tensorboard        # 训练可视化（基础镜像已包含）
+
+# 开发和调试工具
+ipywidgets          # Jupyter 交互组件
+debugpy             # Python 调试器
+yapf                # 代码格式化
+autopep8            # 代码规范化
+pipdeptree          # 依赖关系分析
+rich                # 终端美化
+ipython            # 交互式 Python
+
+# 工具库
+tqdm                # 进度条
+p_tqdm              # 并行进度条
+pathspec            # 路径处理
+imagesize           # 图像尺寸处理
+ujson               # 快速 JSON 处理
+PyYAML              # YAML 处理
+requests            # HTTP 请求
+psutil              # 系统监控

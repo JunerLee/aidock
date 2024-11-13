@@ -1,0 +1,157 @@
+version: '3.8'
+
+x-volumes: &default-volumes
+  volumes:
+    - ${CODE_HOST}:${CODE_CONTAINER}
+    - ${DATA_HOST}:${DATA_CONTAINER}
+    - type: bind
+      source: /tmp/.X11-unix
+      target: /tmp/.X11-unix
+      read_only: true
+      bind:
+        create_host_path: true
+
+services:
+  pytorch:
+    build:
+      context: ./pytorch
+      args:
+        BASE_IMAGE: nvcr.io/nvidia/pytorch:${NGC_PYTORCH_VERSION}
+        USERNAME: ${DEFAULT_USER}
+        USER_UID: ${USER_UID}
+        USER_GID: ${USER_GID}
+        WORKSPACE: ${WORKSPACE}
+    image: aidock/pytorch:${NGC_PYTORCH_VERSION}
+    container_name: pytorch_${NGC_PYTORCH_VERSION}
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - JUPYTER_PORT=${PYTORCH_JUPYTER_PORT}
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN}
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+      - DISPLAY=${DISPLAY:-host.docker.internal:0.0}
+    ports:
+      - "${PYTORCH_SSH_PORT}:22"
+      - "${PYTORCH_JUPYTER_PORT}:${PYTORCH_JUPYTER_PORT}"
+    <<: *default-volumes
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - aidock_network
+
+  pytorch-lite:
+    build:
+      context: ./pytorch-lite
+      args:
+        BASE_IMAGE: pytorch/pytorch:${PYTORCH_LITE_VERSION}
+        USERNAME: ${DEFAULT_USER}
+        USER_UID: ${USER_UID}
+        USER_GID: ${USER_GID}
+        WORKSPACE: ${WORKSPACE}
+    image: aidock/pytorch-lite:${PYTORCH_LITE_VERSION}
+    container_name: pytorch_lite_${PYTORCH_LITE_VERSION}
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - PYTORCH_LITE_JUPYTER_PORT=${PYTORCH_LITE_JUPYTER_PORT}
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN}
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+      - DISPLAY=${DISPLAY:-host.docker.internal:0.0}
+    ports:
+      - "${PYTORCH_SSH_LITE_PORT}:22"
+      - "${PYTORCH_LITE_JUPYTER_PORT}:${PYTORCH_LITE_JUPYTER_PORT}"
+    <<: *default-volumes
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - aidock_network
+
+  deepstream:
+    build:
+      context: ./deepstream
+      args:
+        DEEPSTREAM_VERSION: ${DEEPSTREAM_VERSION}
+        USERNAME: ${DEFAULT_USER}
+        USER_UID: ${USER_UID}
+        USER_GID: ${USER_GID}
+    image: aidock/deepstream:${DEEPSTREAM_VERSION}
+    container_name: deepstream_${DEEPSTREAM_VERSION}
+    privileged: true
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - DISPLAY=${DISPLAY:-host.docker.internal:0.0}
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+      - NVIDIA_DRIVER_CAPABILITIES=all
+      - GST_DEBUG=${GST_DEBUG}
+      - RTSP_PORT=${RTSP_PORT}
+      - QT_X11_NO_MITSHM=1
+      - PULSE_SERVER=${PULSE_SERVER:-host.docker.internal}
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+    ports:
+      - "${DEEPSTREAM_SSH_PORT}:22"
+      - "${RTSP_PORT}:${RTSP_PORT}"
+    volumes:
+      - ${CODE_HOST}:${CODE_CONTAINER}
+      - ${DATA_HOST}:${DATA_CONTAINER}
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        read_only: true
+        bind:
+          create_host_path: true
+      - /dev/snd:/dev/snd
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    devices:
+      - /dev/snd:/dev/snd
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - aidock_network
+
+  cpp:
+    build:
+      context: ./cpp
+      args:
+        CPP_VERSION: ${CPP_VERSION}
+        USERNAME: ${DEFAULT_USER}
+        USER_UID: ${USER_UID}
+        USER_GID: ${USER_GID}
+    image: aidock/cpp:${CPP_VERSION}
+    container_name: cpp_${CPP_VERSION}
+    restart: unless-stopped
+    environment:
+      - TZ=${TZ}
+      - DISPLAY=${DISPLAY:-host.docker.internal:0.0}
+    ports:
+      - "${CPP_SSH_PORT}:22"
+    <<: *default-volumes
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - aidock_network
+
+networks:
+  aidock_network:
+    name: ${NETWORK_NAME}
+    driver: bridge
