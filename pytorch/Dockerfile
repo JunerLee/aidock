@@ -27,7 +27,10 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
     git \
     curl \
     locales \
-    language-pack-zh-hans && \
+    language-pack-zh-hans \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    dos2unix && \
     # 配置中文语言环境
     locale-gen zh_CN.UTF-8 && \
     update-locale LANG=zh_CN.UTF-8 LANGUAGE=zh_CN:zh LC_ALL=zh_CN.UTF-8 && \
@@ -59,16 +62,17 @@ RUN mkdir /var/run/sshd && \
 COPY requirements.txt /tmp/
 RUN pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple && \
     pip config set install.trusted-host mirrors.tuna.tsinghua.edu.cn && \
-    pip install --no-cache-dir -r /tmp/requirements.txt
+    pip install --no-cache-dir -r /tmp/requirements.txt --timeout 7200
 
 # 设置工作目录并创建必要的目录
 WORKDIR ${WORKSPACE}
 RUN mkdir -p ${WORKSPACE} && \
     chown ${USER_UID}:${USER_GID} ${WORKSPACE}
 
-# 复制启动脚本
+# 复制启动脚本并确保跨平台兼容性
 COPY --chown=${USERNAME}:${USERNAME} startup.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/startup.sh
+RUN dos2unix /usr/local/bin/startup.sh && \
+    chmod +x /usr/local/bin/startup.sh
 
 # 暴露必要的端口
 EXPOSE 22 8888 6006
