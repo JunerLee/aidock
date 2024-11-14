@@ -27,7 +27,9 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
     git \
     curl \
     locales \
-    language-pack-zh-hans && \
+    language-pack-zh-hans \
+    libgl1-mesa-glx \
+    libglib2.0-0 && \
     # 配置中文语言环境
     locale-gen zh_CN.UTF-8 && \
     update-locale LANG=zh_CN.UTF-8 LANGUAGE=zh_CN:zh LC_ALL=zh_CN.UTF-8 && \
@@ -54,6 +56,13 @@ RUN mkdir /var/run/sshd && \
     sed -i 's/#Port 22/Port 22/' /etc/ssh/sshd_config && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
     sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
+
+# 配置conda环境
+RUN ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> /etc/bash.bashrc && \
+    echo "conda activate base" >> /etc/bash.bashrc && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> /root/.bashrc && \
+    echo "conda activate base" >> /root/.bashrc
 
 # 切换 pip 源为国内镜像源并安装依赖
 COPY requirements.txt /tmp/
