@@ -64,6 +64,11 @@ RUN pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/we
     pip config set install.trusted-host mirrors.tuna.tsinghua.edu.cn && \
     pip install --no-cache-dir -r /tmp/requirements.txt --timeout 7200
 
+# 安装并运行 opencv-fixer 来修复 OpenCV 问题
+RUN pip install --no-cache-dir opencv-fixer==0.2.5 && \
+    python -c "from opencv_fixer import AutoFix; AutoFix()" && \
+    rm -rf /root/.cache/pip/*
+
 # 设置工作目录并创建必要的目录
 WORKDIR ${WORKSPACE}
 RUN mkdir -p ${WORKSPACE} && \
